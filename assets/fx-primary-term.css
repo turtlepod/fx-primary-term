@@ -1,0 +1,21 @@
+/**
+ * Primary Term CSS
+ *
+ * @since 1.0.0
+ */
+
+.fx-primary-term-primary,
+.fx-primary-term-set-primary {
+	float: right;
+	font-size: 11px;
+	line-height: 24px;
+}
+.fx-primary-term-primary {
+	font-weight: bold;
+}
+.fx-primary-term-set-primary {
+	cursor: pointer;
+}
+.fx-primary-term-set-primary:hover{
+	font-weight: bold;
+}
