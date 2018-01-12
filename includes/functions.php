@@ -92,7 +92,7 @@ add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 	$_taxonomies = fx_primary_term_get_taxonomies();
 	$taxonomies = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
 
-	if ( 'post.php' === $hook_suffix && $taxonomies ) {
+	if ( in_array( $hook_suffix, array( 'post.php', 'post-new.php' ) ) && $taxonomies ) {
 		wp_enqueue_style( 'fx-primary-term', FX_PRIMARY_TERM_URI . 'assets/fx-primary-term.css', array(), FX_PRIMARY_TERM_VERSION );
 		wp_enqueue_script( 'fx-primary-term', FX_PRIMARY_TERM_URI . 'assets/fx-primary-term.js', array( 'jquery' ), FX_PRIMARY_TERM_VERSION );
 		wp_localize_script( 'fx-primary-term', 'fxPrimaryTerm', array(
