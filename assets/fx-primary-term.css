@@ -4,11 +4,24 @@
  * @since 1.0.0
  */
 
+.fx-primary-term-taxonomy-list-item {
+	position: relative;
+}
+.fx-primary-term-taxonomy-list-item:after {
+	content:".";display:block;height:0;clear:both;visibility:hidden;
+}
+.fx-primary-term-taxonomy-list-item label.selectit {
+	margin-right: 50px;
+}
+
 .fx-primary-term-primary,
 .fx-primary-term-set-primary {
 	float: right;
 	font-size: 11px;
 	line-height: 24px;
+	position: absolute;
+	right: 0;
+	top: 3px;
 }
 .fx-primary-term-primary {
 	font-weight: bold;
@@ -16,6 +29,10 @@
 .fx-primary-term-set-primary {
 	cursor: pointer;
 }
-.fx-primary-term-set-primary:hover{
+.fx-primary-term-set-primary:hover {
 	font-weight: bold;
+}
+.fx-primary-term-taxonomy-list-item[data-checked="0"] .fx-primary-term-primary,
+.fx-primary-term-taxonomy-list-item[data-checked="0"] .fx-primary-term-set-primary {
+	display: none;
 }

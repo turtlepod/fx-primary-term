@@ -23,15 +23,33 @@
 		 *
 		 * @param tax Taxonomy
 		 */
-		var ProcessPrimaryTermList = function( tax ) {
+		fxPrimaryTerm.ProcessPrimaryTermList = function( tax ) {
 			var metaBox = $( '#' + tax + 'div' );
-			var list = $( '#' + tax + 'div ul.' + tax + 'checklist' );
+			if ( 'undefined' === metaBox || $.inArray( tax, fxPrimaryTerm.taxonomies ) < 0 ) {
+				return;
+			}
+
+			var list = $( '#' + tax + 'div ul#' + tax + 'checklist' );
 			var primary_field = $( '#fx_primary_term_' + tax );
 			var primary_id = primary_field.val();
 
+			// Mark this list using class.
+			list.addClass( 'fx-primary-term-taxonomy-list' );
+
+			// Process the list.
 			list.find( 'li' ).each( function( index ) {
 				var input = $( this ).find( 'input[type="checkbox"]' );
 				var term_id = input.val();
+
+				// Add class.
+				$( this ).addClass( 'fx-primary-term-taxonomy-list-item' );
+
+				// Add checked data.
+				if ( input.is( ':checked' ) ) {
+					$( this ).attr( 'data-checked', '1' );
+				} else {
+					$( this ).attr( 'data-checked', '0' );
+				}
 
 				// Remove all label.
 				$( this ).find( '.fx-primary-term-primary,.fx-primary-term-set-primary' ).remove();
@@ -47,7 +65,12 @@
 
 		// Process all supported taxonomies on initial load.
 		$.each( fxPrimaryTerm.taxonomies, function( index, tax ) {
-			ProcessPrimaryTermList( tax );
+			fxPrimaryTerm.ProcessPrimaryTermList( tax );
+		} );
+
+		// On term add.
+		$( document ).on( 'wpListAddEnd', function( settings, list ) {
+			fxPrimaryTerm.ProcessPrimaryTermList( list.what );
 		} );
 
 		// Set primary.
@@ -55,7 +78,16 @@
 			var tax = $( this ).data( 'taxonomy' );
 			var term_id = $( this ).data( 'term_id' );
 			$( '#fx_primary_term_' + tax ).val( term_id );
-			ProcessPrimaryTermList( tax );
+			fxPrimaryTerm.ProcessPrimaryTermList( tax );
+		} );
+
+		// Checked/Unchecked Class.
+		$( document ).on( 'change', '.fx-primary-term-taxonomy-list input[type="checkbox"]', function(e) {
+			if ( $( this ).is( ':checked' ) ) {
+				$( this ).parents( 'li.fx-primary-term-taxonomy-list-item' ).attr( 'data-checked', '1' );
+			} else {
+				$( this ).parents( 'li.fx-primary-term-taxonomy-list-item' ).attr( 'data-checked', '0' );
+			}
 		} );
 
 	});

@@ -11,6 +11,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Get all supported taxonomy in post types.
+ * Currently only support hierarchical taxonomy.
  *
  * @since 1.0.0
  *
@@ -20,8 +21,63 @@ function fx_primary_term_get_taxonomies() {
 	$data = array(
 		'post' => array( 'category' ),
 	);
-	// @todo: check if taxonomy hierarchical and validate each taxonomy/post type.
+
 	return apply_filters( 'fx_primary_term_taxonomies', $data );
+}
+
+/**
+ * Get Primary Term Post Meta Key
+ * Where to store primary term ID, as default it use the same meta key as Yoast SEO.
+ *
+ * @since 1.0.0
+ *
+ * @param string $taxonomy Taxonomy name.
+ * @return string
+ */
+function fx_primary_get_term_meta_key( $taxonomy ) {
+	return apply_filters( 'fx_primary_term_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
+}
+
+/**
+ * Get Primary Term of A Post.
+ * Will always return a term ID if a post/object at least have single taxonomy term.
+ *
+ * @since 1.0.0
+ *
+ * @param string      $taxonomy Taxonomy name. e.g "category".
+ * @param int|WP_Post $post_id  Post ID. Optional, will use current post loop if not set.
+ * @return int|null
+ */
+function fx_primary_term_get_primary_term( $taxonomy, $post_id = null ) {
+	// Get post object.
+	$post = get_post( $post_id );
+
+	// Get list of supported taxonomies.
+	$taxonomies = fx_primary_term_get_taxonomies();
+
+	// Bail, if post not set, or not supported.
+	if ( ! $post || ! isset( $taxonomies[ $post->post_type ] ) || ! is_array( $taxonomies[ $post->post_type ] ) || ! in_array( $taxonomy, $taxonomies[ $post->post_type ] ) ) {
+		return null;
+	}
+
+	// Meta key.
+	$meta_key = fx_primary_get_term_meta_key( $taxonomy );
+
+	// Get meta stored in term ID.
+	$primary_id = get_post_meta( $post->ID, $meta_key, true );
+
+	// Get post terms.
+	$post_terms = wp_get_post_terms( $post->ID, $taxonomy, array(
+		'fields' => 'ids',
+	) );
+	if ( is_wp_error( $post_terms ) || ! $post_terms ) {
+		return null;
+	}
+
+	// If ID valid, return it. If not, get the first one as primary.
+	$primary_term = ( $primary_id && in_array( $primary_id, $post_terms ) ) ? $primary_id : current( $post_terms );
+
+	return absint( apply_filters( 'fx_primary_term_primary_term', $primary_term, $post, $taxonomy ) );
 }
 
 /**
@@ -42,7 +98,7 @@ add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 		wp_localize_script( 'fx-primary-term', 'fxPrimaryTerm', array(
 			'taxonomies' => $taxonomies,
 			'i18n' => array(
-				'setPrimaryLabel' => esc_html__( 'Set Primary', 'fx-primary-term' ),
+				'setPrimaryLabel' => esc_html__( 'Set', 'fx-primary-term' ),
 				'PrimaryLabel' => esc_html__( 'Primary', 'fx-primary-term' ),
 			),
 		) );
@@ -69,7 +125,7 @@ add_action( 'edit_form_after_editor', function( $post ) {
 		<?php foreach ( $taxonomies as $taxonomy ) : ?>
 			<p>
 				<label for="fx_primary_term_<?php echo esc_attr( $taxonomy ); ?>"><?php echo esc_html( $taxonomy ); ?></label>
-				<input id="fx_primary_term_<?php echo esc_attr( $taxonomy ); ?>" type="number" class="fx_primary_term_field" name="fx_primary_term[<?php echo esc_attr( $taxonomy ); ?>]" value="<?php echo esc_attr( get_post_meta( $post->ID, "_yoast_wpseo_primary_{$taxonomy}", true ) ); ?>">
+				<input id="fx_primary_term_<?php echo esc_attr( $taxonomy ); ?>" type="number" class="fx_primary_term_field" name="fx_primary_term[<?php echo esc_attr( $taxonomy ); ?>]" value="<?php echo esc_attr( fx_primary_term_get_primary_term( $taxonomy, $post->ID ) ); ?>">
 			</p>
 		<?php endforeach; ?>
 
@@ -91,6 +147,7 @@ add_action( 'save_post', function( $post_id, $post ) {
 		return;
 	}
 
+	// Get taxonomies.
 	$_taxonomies = fx_primary_term_get_taxonomies();
 	$taxonomies = isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
 	if ( ! $taxonomies || ! is_array( $_POST['fx_primary_term'] ) ) {
@@ -98,11 +155,24 @@ add_action( 'save_post', function( $post_id, $post ) {
 	}
 
 	foreach ( $taxonomies as $taxonomy ) {
-		if ( isset( $_POST['fx_primary_term'][ $taxonomy ] ) && $_POST['fx_primary_term'][ $taxonomy ] ) {
-			// @todo: check taxonomy before saving.
-			update_post_meta( $post_id, "_yoast_wpseo_primary_{$taxonomy}", absint( $_POST['fx_primary_term'][ $taxonomy ] ) );
-		} else {
-			delete_post_meta( $post_id, "_yoast_wpseo_primary_{$taxonomy}" );
+		// Get primary term.
+		$term_id = isset( $_POST['fx_primary_term'][ $taxonomy ] ) ? absint( $_POST['fx_primary_term'][ $taxonomy ] ) : false;
+
+		if ( $term_id ) {
+
+			// Get current post terms.
+			$post_terms = wp_get_post_terms( $post_id, $taxonomy, array(
+				'fields' => 'ids',
+			) );
+
+			// Check if input is valid term ID.
+			if ( in_array( $term_id, $post_terms ) ) {
+				update_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ), absint( $term_id ) );
+			} else { // Not valid, delete it.
+				delete_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ) );
+			}
+		} else { // No term, delete.
+			delete_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ) );
 		}
 	}
 
