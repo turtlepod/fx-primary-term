@@ -107,6 +107,7 @@ add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 
 /**
  * Add Hidden Field To Set Primary Term
+ * Display field for debug by defining FX_PRIMARY_TERM_DEBUG constant to true.
  *
  * @since 1.0.0
  *
@@ -120,7 +121,7 @@ add_action( 'edit_form_after_editor', function( $post ) {
 		return;
 	}
 	?>
-	<div class="fx-primary-term-fields" style="<?php echo defined( 'WP_DEBUG' ) && WP_DEBUG ? 'display:block;' : 'display:none !important;'; ?>">
+	<div class="fx-primary-term-fields" style="<?php echo defined( 'FX_PRIMARY_TERM_DEBUG' ) && FX_PRIMARY_TERM_DEBUG ? 'display:block;' : 'display:none !important;'; ?>">
 
 		<?php foreach ( $taxonomies as $taxonomy ) : ?>
 			<p>

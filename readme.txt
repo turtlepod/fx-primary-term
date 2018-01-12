@@ -3,6 +3,7 @@ Contributors: turtlepod
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TT23LVNKA3AU2
 Tags: Category,Primary Term,Term
 Requires at least: 4.9
+Requires PHP: 5.3
 Tested up to: 4.9
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -51,6 +52,10 @@ add_filter( 'fx_primary_term_taxonomies', function( $tax ) {
 	return $tax;
 } );
 ```
+
+== Screenshots ==
+
+1. No screenshots.
 
 == Changelog ==
 
