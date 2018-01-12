@@ -1,7 +1,7 @@
 === f(x) Primary Term ===
 Contributors: turtlepod
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TT23LVNKA3AU2
-Tags: Category,Primary Term,Term,
+Tags: Category,Primary Term,Term
 Requires at least: 4.9
 Tested up to: 4.9
 Stable tag: 1.0.0
@@ -32,7 +32,14 @@ This plugin is very similar with Yoast SEO plugin "Primary Term" functionality. 
 
 = How to get primary term? =
 
-You can use `<?php fx_primary_term_get_primary_term( $taxonomy, $post_id = null ); ?>` function.
+You can use `fx_primary_term_get_primary_term()` function. Here's an example usage.
+
+```
+$primary_category_id = fx_primary_term_get_primary_term( 'category', get_the_ID() );
+if ( $primary_category_id ) {
+	// Do something.
+}
+```
 
 = How to add support to custom post type/taxonomy  =
 
@@ -44,10 +51,6 @@ add_filter( 'fx_primary_term_taxonomies', function( $tax ) {
 	return $tax;
 } );
 ```
-
-= Why Build This Plugin =
-
-It's an exercise/task for job application at 10up.
 
 == Changelog ==
 
