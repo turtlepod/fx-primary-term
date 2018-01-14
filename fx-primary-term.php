@@ -3,7 +3,7 @@
  * Plugin Name: f(x) Primary Term
  * Plugin URI: http://genbumedia.com/plugins/fx-primary-term/
  * Description: Functionality plugin to set primary term of taxonomy in a post.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: David Chandra Purnama
  * Author URI: http://shellcreeper.com/
  * License: GPLv2 or later
@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Constants.
-define( 'FX_PRIMARY_TERM_VERSION', '1.0.0' );
+define( 'FX_PRIMARY_TERM_VERSION', '1.0.1' );
 define( 'FX_PRIMARY_TERM_PATH', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'FX_PRIMARY_TERM_URI', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 
