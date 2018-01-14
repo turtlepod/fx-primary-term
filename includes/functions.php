@@ -22,7 +22,8 @@ function fx_primary_term_get_taxonomies() {
 		'post' => array( 'category' ),
 	);
 
-	return apply_filters( 'fx_primary_term_taxonomies', $data );
+	$data = apply_filters( 'fx_primary_term_taxonomies', $data );
+	return is_array( $data ) ? $data : array();
 }
 
 /**
@@ -35,7 +36,8 @@ function fx_primary_term_get_taxonomies() {
  * @return string
  */
 function fx_primary_get_term_meta_key( $taxonomy ) {
-	return apply_filters( 'fx_primary_term_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
+	$key = apply_filters( 'fx_primary_term_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
+	return sanitize_key( $key );
 }
 
 /**
@@ -150,7 +152,7 @@ add_action( 'save_post', function( $post_id, $post ) {
 
 	// Get taxonomies.
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
+	$taxonomies = is_array( $_taxonomies ) && isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
 	if ( ! $taxonomies || ! is_array( $_POST['fx_primary_term'] ) ) {
 		return;
 	}

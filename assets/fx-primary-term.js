@@ -25,6 +25,8 @@
 		 */
 		fxPrimaryTerm.ProcessPrimaryTermList = function( tax ) {
 			var metaBox = $( '#' + tax + 'div' );
+
+			// Check if list exists and supported.
 			if ( 'undefined' === metaBox || $.inArray( tax, fxPrimaryTerm.taxonomies ) < 0 ) {
 				return;
 			}
@@ -68,7 +70,10 @@
 			fxPrimaryTerm.ProcessPrimaryTermList( tax );
 		} );
 
-		// On term add.
+		/**
+		 * Process list after adding new term.
+		 * @link https://github.com/WordPress/WordPress/blob/4.9.1/wp-includes/js/wp-lists.js#L375
+		 */
 		$( document ).on( 'wpListAddEnd', function( settings, list ) {
 			fxPrimaryTerm.ProcessPrimaryTermList( list.what );
 		} );
