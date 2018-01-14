@@ -92,16 +92,16 @@ function fx_primary_term_get_primary_term( $taxonomy, $post_id = null ) {
 add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 	global $post_type;
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
+	$taxonomies  = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
 
 	if ( in_array( $hook_suffix, array( 'post.php', 'post-new.php' ) ) && $taxonomies ) {
 		wp_enqueue_style( 'fx-primary-term', FX_PRIMARY_TERM_URI . 'assets/fx-primary-term.css', array(), FX_PRIMARY_TERM_VERSION );
 		wp_enqueue_script( 'fx-primary-term', FX_PRIMARY_TERM_URI . 'assets/fx-primary-term.js', array( 'jquery' ), FX_PRIMARY_TERM_VERSION );
 		wp_localize_script( 'fx-primary-term', 'fxPrimaryTerm', array(
 			'taxonomies' => $taxonomies,
-			'i18n' => array(
+			'i18n'       => array(
 				'setPrimaryLabel' => esc_html__( 'Set', 'fx-primary-term' ),
-				'PrimaryLabel' => esc_html__( 'Primary', 'fx-primary-term' ),
+				'PrimaryLabel'    => esc_html__( 'Primary', 'fx-primary-term' ),
 			),
 		) );
 	}
@@ -118,7 +118,7 @@ add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 add_action( 'edit_form_after_editor', function( $post ) {
 	global $post_type, $typenow;
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
+	$taxonomies  = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
 	if ( 'post' !== $typenow || ! $taxonomies ) {
 		return;
 	}
@@ -152,7 +152,7 @@ add_action( 'save_post', function( $post_id, $post ) {
 
 	// Get taxonomies.
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = is_array( $_taxonomies ) && isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
+	$taxonomies  = is_array( $_taxonomies ) && isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
 	if ( ! $taxonomies || ! is_array( $_POST['fx_primary_term'] ) ) {
 		return;
 	}
