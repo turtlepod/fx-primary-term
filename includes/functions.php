@@ -35,8 +35,8 @@ function fx_primary_term_get_taxonomies() {
  * @param string $taxonomy Taxonomy name.
  * @return string
  */
-function fx_primary_get_term_meta_key( $taxonomy ) {
-	$key = apply_filters( 'fx_primary_term_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
+function fx_primary_term_get_post_meta_key( $taxonomy ) {
+	$key = apply_filters( 'fx_primary_term_post_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
 	return sanitize_key( $key );
 }
 
@@ -63,7 +63,7 @@ function fx_primary_term_get_primary_term( $taxonomy, $post_id = null ) {
 	}
 
 	// Meta key.
-	$meta_key = fx_primary_get_term_meta_key( $taxonomy );
+	$meta_key = fx_primary_term_get_post_meta_key( $taxonomy );
 
 	// Get meta stored in term ID.
 	$primary_id = get_post_meta( $post->ID, $meta_key, true );
@@ -170,12 +170,12 @@ add_action( 'save_post', function( $post_id, $post ) {
 
 			// Check if input is valid term ID.
 			if ( in_array( $term_id, $post_terms ) ) {
-				update_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ), absint( $term_id ) );
+				update_post_meta( $post_id, fx_primary_term_get_post_meta_key( $taxonomy ), absint( $term_id ) );
 			} else { // Not valid, delete it.
-				delete_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ) );
+				delete_post_meta( $post_id, fx_primary_term_get_post_meta_key( $taxonomy ) );
 			}
 		} else { // No term, delete.
-			delete_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ) );
+			delete_post_meta( $post_id, fx_primary_term_get_post_meta_key( $taxonomy ) );
 		}
 	}
 
