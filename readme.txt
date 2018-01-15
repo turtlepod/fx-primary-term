@@ -59,9 +59,11 @@ add_filter( 'fx_primary_term_taxonomies', function( $tax ) {
 
 == Changelog ==
 
-= 1.0.1 - 14 Jan 2018 =
+= 1.0.1 - 15 Jan 2018 =
 * Bug Fix: Now works with new post screen.
 * Minor improvements.
+* Deprecate & Change fx_primary_get_term_meta_key() to fx_primary_term_get_post_meta_key().
+* Deprecate "fx_primary_term_meta_key" filter, now use "fx_primary_term_post_meta_key". No fallback.
 
 = 1.0.0 - 12 Jan 2018 =
 * Initial release.

@@ -78,7 +78,10 @@ function fx_primary_term_init() {
 	// Load text domain.
 	load_plugin_textdomain( dirname( plugin_basename( __FILE__ ) ), false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	// Load plugin function.
+	// Load plugin functions.
 	require_once( FX_PRIMARY_TERM_PATH . 'includes/functions.php' );
+
+	// Load deprecated functions.
+	require_once( FX_PRIMARY_TERM_PATH . 'includes/functions-deprecated.php' );
 }
 add_action( 'plugins_loaded', 'fx_primary_term_init' );
