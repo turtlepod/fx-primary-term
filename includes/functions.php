@@ -22,7 +22,8 @@ function fx_primary_term_get_taxonomies() {
 		'post' => array( 'category' ),
 	);
 
-	return apply_filters( 'fx_primary_term_taxonomies', $data );
+	$data = apply_filters( 'fx_primary_term_taxonomies', $data );
+	return is_array( $data ) ? $data : array();
 }
 
 /**
@@ -34,8 +35,9 @@ function fx_primary_term_get_taxonomies() {
  * @param string $taxonomy Taxonomy name.
  * @return string
  */
-function fx_primary_get_term_meta_key( $taxonomy ) {
-	return apply_filters( 'fx_primary_term_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
+function fx_primary_term_get_post_meta_key( $taxonomy ) {
+	$key = apply_filters( 'fx_primary_term_post_meta_key', "_yoast_wpseo_primary_{$taxonomy}", $taxonomy );
+	return sanitize_key( $key );
 }
 
 /**
@@ -61,7 +63,7 @@ function fx_primary_term_get_primary_term( $taxonomy, $post_id = null ) {
 	}
 
 	// Meta key.
-	$meta_key = fx_primary_get_term_meta_key( $taxonomy );
+	$meta_key = fx_primary_term_get_post_meta_key( $taxonomy );
 
 	// Get meta stored in term ID.
 	$primary_id = get_post_meta( $post->ID, $meta_key, true );
@@ -90,16 +92,16 @@ function fx_primary_term_get_primary_term( $taxonomy, $post_id = null ) {
 add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 	global $post_type;
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
+	$taxonomies  = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
 
-	if ( 'post.php' === $hook_suffix && $taxonomies ) {
+	if ( in_array( $hook_suffix, array( 'post.php', 'post-new.php' ) ) && $taxonomies ) {
 		wp_enqueue_style( 'fx-primary-term', FX_PRIMARY_TERM_URI . 'assets/fx-primary-term.css', array(), FX_PRIMARY_TERM_VERSION );
 		wp_enqueue_script( 'fx-primary-term', FX_PRIMARY_TERM_URI . 'assets/fx-primary-term.js', array( 'jquery' ), FX_PRIMARY_TERM_VERSION );
 		wp_localize_script( 'fx-primary-term', 'fxPrimaryTerm', array(
 			'taxonomies' => $taxonomies,
-			'i18n' => array(
+			'i18n'       => array(
 				'setPrimaryLabel' => esc_html__( 'Set', 'fx-primary-term' ),
-				'PrimaryLabel' => esc_html__( 'Primary', 'fx-primary-term' ),
+				'PrimaryLabel'    => esc_html__( 'Primary', 'fx-primary-term' ),
 			),
 		) );
 	}
@@ -116,7 +118,7 @@ add_action( 'admin_enqueue_scripts', function( $hook_suffix ) {
 add_action( 'edit_form_after_editor', function( $post ) {
 	global $post_type, $typenow;
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
+	$taxonomies  = isset( $_taxonomies[ $post_type ] ) ? $_taxonomies[ $post_type ] : array();
 	if ( 'post' !== $typenow || ! $taxonomies ) {
 		return;
 	}
@@ -150,7 +152,7 @@ add_action( 'save_post', function( $post_id, $post ) {
 
 	// Get taxonomies.
 	$_taxonomies = fx_primary_term_get_taxonomies();
-	$taxonomies = isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
+	$taxonomies  = is_array( $_taxonomies ) && isset( $_taxonomies[ $post->post_type ] ) ? $_taxonomies[ $post->post_type ] : array();
 	if ( ! $taxonomies || ! is_array( $_POST['fx_primary_term'] ) ) {
 		return;
 	}
@@ -168,12 +170,12 @@ add_action( 'save_post', function( $post_id, $post ) {
 
 			// Check if input is valid term ID.
 			if ( in_array( $term_id, $post_terms ) ) {
-				update_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ), absint( $term_id ) );
+				update_post_meta( $post_id, fx_primary_term_get_post_meta_key( $taxonomy ), absint( $term_id ) );
 			} else { // Not valid, delete it.
-				delete_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ) );
+				delete_post_meta( $post_id, fx_primary_term_get_post_meta_key( $taxonomy ) );
 			}
 		} else { // No term, delete.
-			delete_post_meta( $post_id, fx_primary_get_term_meta_key( $taxonomy ) );
+			delete_post_meta( $post_id, fx_primary_term_get_post_meta_key( $taxonomy ) );
 		}
 	}
 
