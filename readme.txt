@@ -5,7 +5,7 @@ Tags: Category,Primary Term,Term
 Requires at least: 4.9
 Requires PHP: 5.3
 Tested up to: 4.9
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ add_filter( 'fx_primary_term_taxonomies', function( $tax ) {
 1. No screenshots.
 
 == Changelog ==
+
+= 1.0.2 - 18 Jan 2018 =
+* Most Used Tabs Support.
 
 = 1.0.1 - 15 Jan 2018 =
 * Bug Fix: Now works with new post screen.
