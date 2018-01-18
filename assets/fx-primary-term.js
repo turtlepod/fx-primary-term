@@ -31,7 +31,7 @@
 				return;
 			}
 
-			var list = $( '#' + tax + 'div ul#' + tax + 'checklist' );
+			var list = $( '#' + tax + 'div ul#' + tax + 'checklist, #' + tax + 'div ul#' + tax + 'checklist-pop' );
 			var primary_field = $( '#fx_primary_term_' + tax );
 			var primary_id = primary_field.val();
 
@@ -83,6 +83,12 @@
 			var tax = $( this ).data( 'taxonomy' );
 			var term_id = $( this ).data( 'term_id' );
 			$( '#fx_primary_term_' + tax ).val( term_id );
+			fxPrimaryTerm.ProcessPrimaryTermList( tax );
+		} );
+
+		// Switch "All" and "Most Used" Tabs.
+		$( document ).on( 'click', '.category-tabs a', function(e) {
+			var tax = $( this ).parents( 'ul' ).attr( 'id' ).replace( '-tabs', '' );
 			fxPrimaryTerm.ProcessPrimaryTermList( tax );
 		} );
 
